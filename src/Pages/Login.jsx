@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 
 import toast from "react-hot-toast";
-
+import useAxiosSequreCommon from "../AxiosSequreCommon/useAxiosSequreCommon";
 const Login = () => {
+  const axiosSequreCommon = useAxiosSequreCommon()
   const {  user, 
     loading,
     signIn,
@@ -30,12 +31,9 @@ const Login = () => {
       .then((result) => {
         const loggedInUser = result.user;
         console.log(loggedInUser);
-
-        if (result.user) {
-                navigate("/");
-                        toast.success('Sign in Successfully')
-  
-              }
+        navigate("/");
+        toast.success('Sign in Successfully')
+      
 
         const user = { email };
         console.log(user);
@@ -57,12 +55,38 @@ const Login = () => {
     }
   }, [user]);
 
-  const handleSocialLogin = (socialProvider) => {
-    socialProvider().then((result) => {
-      if (result.user) {
-        // navigate
-        navigate( "/");
+  const handleSocialLogin = () => {
+    googleSignIn()
+    .then((result) => {
+      console.log(result.user);
+
+      const inUserInfo = {
+        email : result.user?.email,
+        name: result.user?.displayName
       }
+
+      if (result.user) {
+        axiosSequreCommon.post('/users', inUserInfo)
+        .then(res=>{
+          console.log(res.data);
+
+        })
+              navigate("/");
+                      toast.success('Sign in Successfully')
+
+            }
+
+
+
+
+
+
+
+      // if (result.user) {
+      //   console.log(result.user);
+      //   // navigate
+      //   navigate( "/");
+      // }
     });
   };
   // const handleSocialLogin = async () => {
@@ -93,7 +117,7 @@ const Login = () => {
           {/* socials */}
           <div className="my-6 space-y-4">
             <button
-              onClick={() => handleSocialLogin(googleSignIn)}
+              onClick={handleSocialLogin}
               aria-label="Login with Google"
               type="button"
               className="flex items-center justify-center w-full p-4 space-x-4 border rounded-md focus:ring-2 focus:ring-offset-1 dark:border-gray-600 focus:dark:ring-violet-600"

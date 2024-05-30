@@ -3,11 +3,13 @@ import { Link, NavLink } from "react-router-dom";
 import useAuth from "../useAuth/useAuth";
 import { FaCartShopping } from "react-icons/fa6";
 import useCart from "../useCart/useCart";
+import useAdmin from "../Hooks/useAdmin";
 
 const Nav = () => {
 
   const { user, logOut}= useAuth()
   const [carts] = useCart()
+  const [isAdmin]= useAdmin()
 
 
 
@@ -36,6 +38,19 @@ const Nav = () => {
             <FaCartShopping />
             <div className="badge badge-secondary">{carts.length}</div>
           </button></NavLink>
+
+
+           {
+            // user? 'true' : 'false'
+            // nested tarnary : 
+            // user? arekta condition ? 'double true' : 'one true' : 'false'
+           }
+           {
+            user && isAdmin && <li><NavLink to='/dashboard/adminHome'>Admin Home</NavLink></li>
+           }
+           {
+            user && !isAdmin && <li><NavLink to='/dashboard/userHome'>User Home</NavLink></li>
+           }
   </>
 
 

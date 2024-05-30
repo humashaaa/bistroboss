@@ -25,20 +25,9 @@ const Register = () => {
     createUser(email, password).then((result) => {
       setUser({ ...user, photoURL : photo, displayName: name });
       console.log(user);
-      // user set on the database
-
-      // const userInfo = {name, photo};
-      // axiosSequreCommon.post("/users", userInfo);
-
-      // toast.success("user info updated");
-
-      // navigate("/");
-      // console.log(result);
-      // reset(),
-// console.log(setUser);
-// setUser(name, photoURL)
 
         updateUser(name, photo).then(() => {
+      // user set on the database
 
           const userInfo = {
             name,

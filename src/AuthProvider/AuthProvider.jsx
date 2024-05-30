@@ -2,6 +2,7 @@ import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndP
 import { createContext, useEffect, useState } from "react";
 import auth from "../Firebase/Firebase.config";
 import { GoogleAuthProvider } from "firebase/auth";
+import useAxiosSequreCommon from "../AxiosSequreCommon/useAxiosSequreCommon";
 
 export const AuthContext = createContext(null)
 const provider = new GoogleAuthProvider();
@@ -9,6 +10,7 @@ const provider = new GoogleAuthProvider();
 const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
+    const axiosSequreCommon = useAxiosSequreCommon();
     // create user
     const createUser = (email, password)=>{
         setLoading(true)
@@ -49,12 +51,37 @@ const updateUser = (name, photo)=>{
     useEffect(()=>{
         const unSubscribe =  onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser)
-            setLoading(false)
+            if(currentUser){
+                // assign token
+                // get token and store client in local storage
+                const userInfo = {
+                    email : currentUser.email
+                }
+                axiosSequreCommon.post('/jwt', userInfo)
+                .then(res=>{
+                    if(res.data.token){
+                        localStorage.setItem('access-token', res.data.token)
+                        setLoading(false)
+                    }
+                   
+                })
+
+
+
+            } 
+            else{
+                // TODO: remove token if token stored in client side- local storage, caching, in memory
+                // remove token from local storage
+                localStorage.removeItem('access-token')
+                setLoading(false)
+
+
+            }
 
         })
         return ()=> unSubscribe()
 
-    },[])
+    },[axiosSequreCommon])
 
     const allInfo={
         user,
